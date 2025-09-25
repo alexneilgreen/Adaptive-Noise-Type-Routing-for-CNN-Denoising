@@ -20,10 +20,10 @@ python data_loader.py --dataset mnist
 
 ```bash
 # Generate examples for all datasets (default)
-python noise_generator.py --generate_examples True
+python noise_generator.py --generate_examples
 
 # Generate examples for specific dataset
-python noise_generator.py --generate_examples True --dataset cifar10
+python noise_generator.py --generate_examples --dataset cifar10
 ```
 
 ## File Arguments
@@ -56,7 +56,7 @@ python noise_generator.py [OPTIONS]
 **Arguments:**
 
 - `--generate_examples` : Generate example images (default: `False`)
-  - Type: `bool` (True/False)
+  - Type: `store_true` By adding the argumment it sets it to True (True/False)
 - `--dataset` : Dataset to use for examples (default: `all`)
   - Choices: `all`, `mnist`, `cifar10`, `cifar100`, `stl10`
 - `--num_examples` : Number of example images to generate (default: `10`)
@@ -68,10 +68,10 @@ python noise_generator.py [OPTIONS]
 
 ```bash
 # Generate examples for all datasets
-python noise_generator.py --generate_examples True --num_examples 5
+python noise_generator.py --generate_examples --num_examples 5
 
 # Generate examples for MNIST only
-python noise_generator.py --generate_examples True --dataset mnist --output_dir ./mnist_examples
+python noise_generator.py --generate_examples --dataset mnist --output_dir ./mnist_examples
 
 # Test specific noise type
 python noise_generator.py --test_noise gaussian
