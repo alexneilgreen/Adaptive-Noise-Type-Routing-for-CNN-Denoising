@@ -7,7 +7,7 @@ import logging
 
 from Data_Loader import AdaptiveDataset, get_available_datasets
 from Noise_Generator import NoiseGenerator
-from CompModel import get_model
+from Models.CompModel import get_model
 from Train import Trainer
 
 # Setup logging
@@ -82,7 +82,7 @@ def get_batch_size_for_dataset(dataset_name):
 
 
 def prepare_datasets(dataset_name, noise_types='all', batch_size=None, 
-                    root='./data', num_workers=4, val_split=0.2):
+                    root='./Data', num_workers=4, val_split=0.2):
     """
     Prepare train, validation, and test datasets with noise.
     
@@ -169,7 +169,7 @@ def prepare_datasets(dataset_name, noise_types='all', batch_size=None,
     return train_loader, val_loader, test_loader, num_channels, batch_size
 
 
-def save_results_to_csv(results_dict, output_dir='./results'):
+def save_results_to_csv(results_dict, output_dir='./Results'):
     """
     Append results to a CSV file for aggregation across runs.
     
@@ -184,6 +184,17 @@ def save_results_to_csv(results_dict, output_dir='./results'):
     # Create directory if it doesn't exist
     os.makedirs(output_dir, exist_ok=True)
     
+    # Convert computation_time from seconds to H:M:S format
+    total_seconds = int(results_dict['computation_time'])
+    hours = total_seconds // 3600
+    minutes = (total_seconds % 3600) // 60
+    seconds = total_seconds % 60
+    time_formatted = f"{hours:02d}:{minutes:02d}:{seconds:02d}"
+    
+    # Create new dict with formatted time
+    csv_dict = results_dict.copy()
+    csv_dict['computation_time'] = time_formatted
+    
     # Define field names
     fieldnames = ['dataset', 'model', 'test_loss', 'test_psnr', 'test_ssim', 
                   'computation_time', 'total_params', 'batch_size']
@@ -195,7 +206,7 @@ def save_results_to_csv(results_dict, output_dir='./results'):
         if not file_exists:
             writer.writeheader()
         
-        writer.writerow(results_dict)
+        writer.writerow(csv_dict)
     
     logger.info(f"Results appended to {csv_path}")
 
@@ -353,10 +364,10 @@ def parse_arguments():
                        help='Early Stopping Patience: epochs to wait before stopping')
     
     # Directory settings
-    parser.add_argument('--output_dir', type=str, default='./results',
+    parser.add_argument('--output_dir', type=str, default='./Results',
                        help='Base directory for saving results')
     
-    parser.add_argument('--data_root', type=str, default='./data',
+    parser.add_argument('--data_root', type=str, default='./Data',
                        help='Root directory for datasets')
     
     # System settings

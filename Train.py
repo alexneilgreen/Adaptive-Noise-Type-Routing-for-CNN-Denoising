@@ -26,10 +26,10 @@ def calculate_psnr(img1, img2, max_val=1.0):
     Returns:
         float: PSNR value in dB
     """
-    mse = torch.mean((img1 - img2) ** 2)
+    mse = torch.mean((img1 - img2) ** 2).item()
     if mse == 0:
         return float('inf')
-    return 20 * torch.log10(max_val / torch.sqrt(mse))
+    return 20 * np.log10(max_val / np.sqrt(mse))
 
 
 def calculate_ssim(img1, img2, window_size=11, max_val=1.0):
@@ -417,7 +417,7 @@ class Trainer:
         log_message(f"Test Loss: {test_loss:.4f}")
         log_message(f"Test PSNR: {test_psnr:.2f} dB")
         log_message(f"Test SSIM: {test_ssim:.4f}")
-        log_message(f"Total Computation Time: {total_time:.2f} seconds ({total_time/60:.2f} minutes)")
+        log_message(f"Total Computation Time: {total_time:.2f} seconds")
         log_message("="*60)
         
         # Close log file

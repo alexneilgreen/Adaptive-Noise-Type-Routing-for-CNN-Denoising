@@ -309,7 +309,7 @@ if __name__ == "__main__":
                        help='Dataset to use for examples. Defaults to all.')
     parser.add_argument('--num_examples', type=int, default=10,
                        help='Number of example images to generate')
-    parser.add_argument('--output_dir', type=str, default='./noise_examples',
+    parser.add_argument('--output_dir', type=str, default='./Noise_Examples',
                        help='Directory to save examples')
     parser.add_argument('--test_noise', type=str, 
                        choices=['gaussian', 'salt_pepper', 'uniform', 'poisson', 'jpeg', 'impulse'],
