@@ -1,0 +1,16 @@
+# Core Dependencies
+torch>=2.0.0
+torchvision>=0.15.0
+
+# Loss Function
+pytorch-msssim>=1.0.0
+
+# Image Processing
+Pillow>=9.0.0
+numpy>=1.21.0
+
+# Visualization
+matplotlib>=3.5.0
+
+# Utilities
+tqdm>=4.65.0

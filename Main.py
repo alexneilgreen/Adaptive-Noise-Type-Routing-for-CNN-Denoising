@@ -5,10 +5,10 @@ import csv
 from torch.utils.data import Dataset, DataLoader, random_split
 import logging
 
-from Data_Loader import AdaptiveDataset, get_available_datasets
-from Noise_Generator import NoiseGenerator
+from Utilities.Data_Loader import AdaptiveDataset, get_available_datasets
+from Utilities.Noise_Generator import NoiseGenerator
+from Utilities.Train import Trainer
 from Models.CompModel import get_model
-from Train import Trainer
 
 # Setup logging
 logging.basicConfig(
