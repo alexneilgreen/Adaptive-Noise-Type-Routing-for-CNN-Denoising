@@ -495,15 +495,25 @@ def evaluate_routing_system(dataset_name, args):
     
     logger.info("\nStarting routing evaluation...")
     
+    # Add total_loss to metrics
+    from Utilities.Composite_Loss import CompositeLoss
+    criterion = CompositeLoss(
+        mse_weight=0.35,
+        mae_weight=0.35,
+        ssim_weight=0.20,
+        gradient_weight=0.10
+    ).to(device)
+    
     # Evaluation metrics
     from Utilities.Comp_Train import calculate_psnr, calculate_ssim
     
+    total_loss = 0.0
     total_psnr = 0.0
     total_ssim = 0.0
     correct_routes = 0
     total_images = 0
     
-    per_noise_metrics = {nt: {'psnr': 0.0, 'ssim': 0.0, 'count': 0} for nt in noise_types}
+    per_noise_metrics = {nt: {'loss': 0.0, 'psnr': 0.0, 'ssim': 0.0, 'count': 0} for nt in noise_types}
     
     with torch.no_grad():
         for noisy, clean, true_noise_idx in test_loader:
@@ -528,13 +538,16 @@ def evaluate_routing_system(dataset_name, args):
                 denoised_batch[i] = denoisers[noise_type](noisy[i:i+1]).squeeze(0)
                 
                 # Calculate metrics
+                loss = criterion(denoised_batch[i:i+1], clean[i:i+1]).item()
                 psnr = calculate_psnr(denoised_batch[i:i+1], clean[i:i+1])
                 ssim = calculate_ssim(denoised_batch[i:i+1], clean[i:i+1])
                 
+                total_loss += loss
                 total_psnr += psnr
                 total_ssim += ssim
                 
                 # Track per-noise-type metrics
+                per_noise_metrics[true_noise_type]['loss'] += loss
                 per_noise_metrics[true_noise_type]['psnr'] += psnr
                 per_noise_metrics[true_noise_type]['ssim'] += ssim
                 per_noise_metrics[true_noise_type]['count'] += 1
@@ -545,6 +558,7 @@ def evaluate_routing_system(dataset_name, args):
                 total_images += 1
     
     # Calculate averages
+    avg_loss = total_loss / total_images
     avg_psnr = total_psnr / total_images
     avg_ssim = total_ssim / total_images
     routing_accuracy = 100 * correct_routes / total_images
@@ -552,6 +566,7 @@ def evaluate_routing_system(dataset_name, args):
     # Calculate per-noise averages
     for noise_type in noise_types:
         if per_noise_metrics[noise_type]['count'] > 0:
+            per_noise_metrics[noise_type]['loss'] /= per_noise_metrics[noise_type]['count']
             per_noise_metrics[noise_type]['psnr'] /= per_noise_metrics[noise_type]['count']
             per_noise_metrics[noise_type]['ssim'] /= per_noise_metrics[noise_type]['count']
     
@@ -578,12 +593,14 @@ def evaluate_routing_system(dataset_name, args):
     logger.info("ROUTING SYSTEM RESULTS")
     logger.info("="*60)
     logger.info(f"Routing Accuracy: {routing_accuracy:.2f}%")
+    logger.info(f"Average Loss: {avg_loss:.4f}")
     logger.info(f"Average PSNR: {avg_psnr:.2f} dB")
     logger.info(f"Average SSIM: {avg_ssim:.4f}")
     logger.info("\nPer-Noise-Type Performance:")
     for noise_type in noise_types:
         if per_noise_metrics[noise_type]['count'] > 0:
             logger.info(f"  {noise_type}:")
+            logger.info(f"    Loss: {per_noise_metrics[noise_type]['loss']:.4f}")
             logger.info(f"    PSNR: {per_noise_metrics[noise_type]['psnr']:.2f} dB")
             logger.info(f"    SSIM: {per_noise_metrics[noise_type]['ssim']:.4f}")
             logger.info(f"    Count: {per_noise_metrics[noise_type]['count']}")
