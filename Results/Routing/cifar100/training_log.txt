@@ -1,0 +1,172 @@
+Starting classifier training on device: cuda
+Total epochs: 30
+============================================================
+Epoch 1/30
+  Train - Loss: 0.3107, Accuracy: 87.89%
+  Val   - Loss: 0.0957, Accuracy: 96.97%
+  New best validation loss: 0.0957
+------------------------------------------------------------
+Epoch 2/30
+  Train - Loss: 0.0775, Accuracy: 97.88%
+  Val   - Loss: 0.0157, Accuracy: 99.63%
+  New best validation loss: 0.0157
+------------------------------------------------------------
+Epoch 3/30
+  Train - Loss: 0.0526, Accuracy: 98.52%
+  Val   - Loss: 0.1000, Accuracy: 96.68%
+  Early stopping counter: 1/10
+------------------------------------------------------------
+Epoch 4/30
+  Train - Loss: 0.0553, Accuracy: 98.30%
+  Val   - Loss: 0.1024, Accuracy: 97.72%
+  Early stopping counter: 2/10
+------------------------------------------------------------
+Epoch 5/30
+  Train - Loss: 0.0500, Accuracy: 98.69%
+  Val   - Loss: 0.0277, Accuracy: 98.95%
+  Early stopping counter: 3/10
+------------------------------------------------------------
+Epoch 6/30
+  Train - Loss: 0.0338, Accuracy: 99.10%
+  Val   - Loss: 0.0098, Accuracy: 99.72%
+  New best validation loss: 0.0098
+------------------------------------------------------------
+Epoch 7/30
+  Train - Loss: 0.0636, Accuracy: 98.36%
+  Val   - Loss: 0.7304, Accuracy: 87.28%
+  Early stopping counter: 1/10
+------------------------------------------------------------
+Epoch 8/30
+  Train - Loss: 0.0333, Accuracy: 99.11%
+  Val   - Loss: 0.0243, Accuracy: 99.18%
+  Early stopping counter: 2/10
+------------------------------------------------------------
+Epoch 9/30
+  Train - Loss: 0.0266, Accuracy: 99.29%
+  Val   - Loss: 0.0546, Accuracy: 97.81%
+  Early stopping counter: 3/10
+------------------------------------------------------------
+Epoch 10/30
+  Train - Loss: 0.0285, Accuracy: 99.23%
+  Val   - Loss: 0.0070, Accuracy: 99.82%
+  New best validation loss: 0.0070
+------------------------------------------------------------
+Epoch 11/30
+  Train - Loss: 0.0244, Accuracy: 99.32%
+  Val   - Loss: 0.0096, Accuracy: 99.57%
+  Early stopping counter: 1/10
+------------------------------------------------------------
+Epoch 12/30
+  Train - Loss: 0.0479, Accuracy: 99.02%
+  Val   - Loss: 0.0478, Accuracy: 98.43%
+  Early stopping counter: 2/10
+------------------------------------------------------------
+Epoch 13/30
+  Train - Loss: 0.0237, Accuracy: 99.33%
+  Val   - Loss: 0.0025, Accuracy: 99.95%
+  New best validation loss: 0.0025
+------------------------------------------------------------
+Epoch 14/30
+  Train - Loss: 0.0201, Accuracy: 99.53%
+  Val   - Loss: 0.0178, Accuracy: 99.51%
+  Early stopping counter: 1/10
+------------------------------------------------------------
+Epoch 15/30
+  Train - Loss: 0.0287, Accuracy: 99.32%
+  Val   - Loss: 0.0337, Accuracy: 99.34%
+  Early stopping counter: 2/10
+------------------------------------------------------------
+Epoch 16/30
+  Train - Loss: 0.0264, Accuracy: 99.37%
+  Val   - Loss: 0.0055, Accuracy: 99.79%
+  Early stopping counter: 3/10
+------------------------------------------------------------
+Epoch 17/30
+  Train - Loss: 0.0164, Accuracy: 99.53%
+  Val   - Loss: 0.0498, Accuracy: 98.92%
+  Early stopping counter: 4/10
+------------------------------------------------------------
+Epoch 18/30
+  Train - Loss: 0.0221, Accuracy: 99.47%
+  Val   - Loss: 0.0040, Accuracy: 99.86%
+  Early stopping counter: 5/10
+------------------------------------------------------------
+Epoch 19/30
+  Train - Loss: 0.0136, Accuracy: 99.62%
+  Val   - Loss: 0.0012, Accuracy: 99.98%
+  New best validation loss: 0.0012
+------------------------------------------------------------
+Epoch 20/30
+  Train - Loss: 0.0172, Accuracy: 99.66%
+  Val   - Loss: 0.0144, Accuracy: 99.46%
+  Early stopping counter: 1/10
+------------------------------------------------------------
+Epoch 21/30
+  Train - Loss: 0.0181, Accuracy: 99.56%
+  Val   - Loss: 0.0027, Accuracy: 99.94%
+  Early stopping counter: 2/10
+------------------------------------------------------------
+Epoch 22/30
+  Train - Loss: 0.0332, Accuracy: 99.42%
+  Val   - Loss: 0.0010, Accuracy: 99.97%
+  New best validation loss: 0.0010
+------------------------------------------------------------
+Epoch 23/30
+  Train - Loss: 0.0105, Accuracy: 99.70%
+  Val   - Loss: 0.0025, Accuracy: 99.90%
+  Early stopping counter: 1/10
+------------------------------------------------------------
+Epoch 24/30
+  Train - Loss: 0.0194, Accuracy: 99.53%
+  Val   - Loss: 0.0130, Accuracy: 99.55%
+  Early stopping counter: 2/10
+------------------------------------------------------------
+Epoch 25/30
+  Train - Loss: 0.0117, Accuracy: 99.73%
+  Val   - Loss: 0.0024, Accuracy: 99.93%
+  Early stopping counter: 3/10
+------------------------------------------------------------
+Epoch 26/30
+  Train - Loss: 0.0047, Accuracy: 99.86%
+  Val   - Loss: 0.0031, Accuracy: 99.89%
+  Early stopping counter: 4/10
+------------------------------------------------------------
+Epoch 27/30
+  Train - Loss: 0.0172, Accuracy: 99.60%
+  Val   - Loss: 0.0057, Accuracy: 99.76%
+  Early stopping counter: 5/10
+------------------------------------------------------------
+Epoch 28/30
+  Train - Loss: 0.0073, Accuracy: 99.81%
+  Val   - Loss: 0.0031, Accuracy: 99.86%
+  Early stopping counter: 6/10
+------------------------------------------------------------
+Epoch 29/30
+  Train - Loss: 0.0069, Accuracy: 99.83%
+  Val   - Loss: 0.0002, Accuracy: 99.99%
+  New best validation loss: 0.0002
+------------------------------------------------------------
+Epoch 30/30
+  Train - Loss: 0.0206, Accuracy: 99.56%
+  Val   - Loss: 0.0035, Accuracy: 99.89%
+  Early stopping counter: 1/10
+------------------------------------------------------------
+
+Running final test evaluation...
+
+============================================================
+FINAL TEST RESULTS
+============================================================
+Test Loss: 0.0062
+Test Accuracy: 99.83%
+
+Per-Class Accuracy:
+  gaussian: 99.58%
+  salt_pepper: 100.00%
+  uniform: 99.77%
+  poisson: 99.64%
+  jpeg: 100.00%
+  impulse: 100.00%
+
+Total Computation Time: 1651.26 seconds
+============================================================

@@ -1,5 +1,11 @@
 # Ignore everything in data/
-data/*
+Data/*
 
 # Keep the folder itself
-!data/.gitkeep
+!Data/.gitkeep
+
+#! Temp
+Models/Saved/*
+
+#! Temp
+!Models/Saved/.gitkeep
