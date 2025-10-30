@@ -15,6 +15,7 @@ from Utilities.Class_Train import ClassTrainer
 from Models.NoiseClassifier import NoiseTypeClassifier
 
 # ========== Setup logging ==========
+
 logging.basicConfig(
     level=logging.INFO,
     format='%(asctime)s - %(levelname)s - %(message)s'
@@ -174,20 +175,23 @@ def prepare_datasets(dataset_name, noise_types='all', batch_size=None,
     return train_loader, val_loader, test_loader, num_channels, batch_size
 
 
-def save_results_to_csv(results_dict, output_dir='./Results'):
+def save_results_to_csv(results_dict, output_dir='./Results', model_type='comp'):
     """
     Append results to a CSV file for aggregation across runs.
     
     Args:
         results_dict (dict): Dictionary with keys: dataset, model, test_loss, 
                            test_psnr, test_ssim, computation_time, total_params
-        output_dir (str): Directory to save the CSV
+        output_dir (str): Base directory for saving results
+        model_type (str): 'comp' or 'routing' to determine subdirectory
     """
-    csv_path = os.path.join(output_dir, 'results_summary.csv')
-    file_exists = os.path.exists(csv_path)
+    # Determine subdirectory based on model type
+    subdir = 'Comprehensive' if model_type == 'comp' else 'Routing'
+    csv_dir = os.path.join(output_dir, subdir)
+    os.makedirs(csv_dir, exist_ok=True)
     
-    # Create directory if it doesn't exist
-    os.makedirs(output_dir, exist_ok=True)
+    csv_path = os.path.join(csv_dir, 'results_summary.csv')
+    file_exists = os.path.exists(csv_path)
     
     # Convert computation_time from seconds to H:M:S format
     total_seconds = int(results_dict['computation_time'])
@@ -255,10 +259,17 @@ def train_single_dataset(dataset_name, args):
     logger.info(f"Total parameters: {total_params:,}")
     logger.info(f"Trainable parameters: {trainable_params:,}")
     
-    # Create output directory
-    output_path = os.path.join(args.output_dir, f"{args.model}_{dataset_name.lower()}")
+    # # Create output directory
+    # output_path = os.path.join(args.output_dir, f"{args.model}_{dataset_name.lower()}")
+    # os.makedirs(output_path, exist_ok=True)
+    # logger.info(f"Results will be saved to: {output_path}")
+
+    # Determine subdirectory based on model type
+    subdir = 'Comprehensive' if args.model == 'comp' else 'Routing'
+    output_path = os.path.join(args.output_dir, subdir, dataset_name.lower())
     os.makedirs(output_path, exist_ok=True)
     logger.info(f"Results will be saved to: {output_path}")
+    
     
     trainer = CompTrainer(
         model=model,
@@ -288,7 +299,7 @@ def train_single_dataset(dataset_name, args):
     }
     
     # Save to aggregated CSV
-    save_results_to_csv(results_dict, args.output_dir)
+    save_results_to_csv(results_dict, args.output_dir, model_type=args.model)
     
     logger.info(f"Completed training on {dataset_name.upper()}")
     logger.info("="*60)
@@ -346,8 +357,8 @@ def train_noise_classifier(dataset_name, args):
     logger.info(f"Total parameters: {total_params:,}")
     logger.info(f"Trainable parameters: {trainable_params:,}")
     
-    # Create output directory
-    output_path = os.path.join(args.output_dir, f"classifier_{dataset_name.lower()}")
+    # Create output directory under Routing subdirectory
+    output_path = os.path.join(args.output_dir, 'Routing', dataset_name.lower())
     os.makedirs(output_path, exist_ok=True)
     logger.info(f"Results will be saved to: {output_path}")
     
@@ -372,12 +383,7 @@ def train_noise_classifier(dataset_name, args):
     os.makedirs(model_save_dir, exist_ok=True)
     
     final_model_path = os.path.join(model_save_dir, f'classifier_{dataset_name.lower()}.pth')
-    
-    # Copy the model to the final location
-    import shutil
-    shutil.copy(results['model_path'], final_model_path)
-    logger.info(f"Classifier model copied to: {final_model_path}")
-    
+        
     logger.info(f"Completed classifier training on {dataset_name.upper()}")
     logger.info(f"Test Accuracy: {results['test_accuracy']:.2f}%")
     logger.info("="*60)
@@ -427,7 +433,7 @@ def main(args):
         logger.info("\n" + "="*60)
         logger.info("All training completed successfully!")
         logger.info("="*60)
-        logger.info(f"Results summary saved to: {os.path.join(args.output_dir, 'results_summary.csv')}")
+        logger.info(f"Results summary saved to: {os.path.join(args.output_dir, 'Comprehensive', 'results_summary.csv')}")
         
         return all_results
     

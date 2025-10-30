@@ -3,3 +3,9 @@ Data/*
 
 # Keep the folder itself
 !Data/.gitkeep
+
+#! Temp
+Models/Saved/*
+
+#! Temp
+!Models/Saved/.gitkeep
