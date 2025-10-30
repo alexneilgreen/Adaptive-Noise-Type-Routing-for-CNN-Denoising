@@ -14,6 +14,13 @@ from Models.CompModel import get_model
 from Utilities.Class_Train import ClassTrainer
 from Models.NoiseClassifier import NoiseTypeClassifier
 
+from Models.Routing_Models.GaussianModel import GaussianDenoiser
+from Models.Routing_Models.PoissonModel import PoissonDenoiser
+from Models.Routing_Models.SaltPepperModel import SaltPepperDenoiser
+from Models.Routing_Models.UniformModel import UniformDenoiser
+from Models.Routing_Models.JPEGModel import JPEGDenoiser
+from Models.Routing_Models.ImpulseModel import ImpulseDenoiser
+
 # ========== Setup logging ==========
 
 logging.basicConfig(
@@ -323,6 +330,267 @@ def check_classifier_exists(dataset_name, model_dir='./Models/Saved'):
     return os.path.exists(model_path), model_path
 
 
+def get_noise_model(noise_type, in_channels, out_channels):
+    """
+    Get the appropriate noise-specific denoiser model.
+    
+    Args:
+        noise_type (str): Type of noise ('gaussian', 'salt_pepper', etc.)
+        in_channels (int): Number of input channels
+        out_channels (int): Number of output channels
+    
+    Returns:
+        nn.Module: Noise-specific denoiser model
+    """
+    if noise_type == 'gaussian':
+        return GaussianDenoiser(in_channels, out_channels)
+    elif noise_type == 'salt_pepper':
+        return SaltPepperDenoiser(in_channels, out_channels)
+    elif noise_type == 'uniform':
+        return UniformDenoiser(in_channels, out_channels)
+    elif noise_type == 'poisson':
+        return PoissonDenoiser(in_channels, out_channels)
+    elif noise_type == 'jpeg':
+        return JPEGDenoiser(in_channels, out_channels)
+    elif noise_type == 'impulse':
+        return ImpulseDenoiser(in_channels, out_channels)
+    else:
+        raise ValueError(f"Unknown noise type: {noise_type}")
+
+
+def check_noise_model_exists(noise_type, dataset_name, model_dir='./Models/Saved'):
+    """
+    Check if a trained noise-specific model exists.
+    
+    Args:
+        noise_type (str): Type of noise
+        dataset_name (str): Name of dataset
+        model_dir (str): Directory where models are saved
+    
+    Returns:
+        tuple: (exists, model_path)
+    """
+    model_path = os.path.join(model_dir, f'{noise_type}_{dataset_name.lower()}.pth')
+    return os.path.exists(model_path), model_path
+
+
+def train_noise_specific_model(noise_type, dataset_name, args):
+    """
+    Train a noise-specific denoiser model.
+    
+    Args:
+        noise_type (str): Type of noise to train for
+        dataset_name (str): Name of dataset
+        args: Command line arguments
+        
+    Returns:
+        str: Path to saved model
+    """
+    logger.info("="*60)
+    logger.info(f"Training {noise_type.upper()} Denoiser on {dataset_name.upper()}")
+    logger.info("="*60)
+    
+    # Prepare datasets with only this noise type
+    train_loader, val_loader, test_loader, num_channels, batch_size = prepare_datasets(
+        dataset_name=dataset_name.lower(),
+        noise_types=[noise_type],  # Single noise type
+        batch_size=args.batch_size if args.batch_size > 0 else None,
+        root=args.data_root,
+        num_workers=args.num_workers
+    )
+    
+    # Initialize noise-specific model
+    logger.info(f"Initializing {noise_type} denoiser model...")
+    model = get_noise_model(noise_type, num_channels, num_channels)
+    
+    # Log model parameters
+    total_params = sum(p.numel() for p in model.parameters())
+    trainable_params = sum(p.numel() for p in model.parameters() if p.requires_grad)
+    logger.info(f"Total parameters: {total_params:,}")
+    logger.info(f"Trainable parameters: {trainable_params:,}")
+    
+    # Create output directory
+    output_path = os.path.join(args.output_dir, 'Routing', dataset_name.lower(), noise_type)
+    os.makedirs(output_path, exist_ok=True)
+    logger.info(f"Results will be saved to: {output_path}")
+    
+    # Initialize trainer
+    trainer = CompTrainer(
+        model=model,
+        train_loader=train_loader,
+        val_loader=val_loader,
+        test_loader=test_loader,
+        learning_rate=args.learning_rate,
+        results_dir=output_path,
+        early_stopping_patience=args.ESP,
+        device=args.device
+    )
+    
+    # Train the model
+    logger.info("Starting training...")
+    results = trainer.train(epochs=args.epochs)
+    
+    # Save model to Models/Saved directory
+    model_save_dir = os.path.join('./Models', 'Saved')
+    os.makedirs(model_save_dir, exist_ok=True)
+    
+    model_path = os.path.join(model_save_dir, f'{noise_type}_{dataset_name.lower()}.pth')
+    torch.save(model.state_dict(), model_path)
+    logger.info(f"Model saved to {model_path}")
+    
+    logger.info(f"Completed {noise_type} denoiser training on {dataset_name.upper()}")
+    logger.info(f"Test PSNR: {results['test_psnr']:.2f} dB")
+    logger.info("="*60)
+    
+    return model_path
+
+
+def evaluate_routing_system(dataset_name, args):
+    """
+    Evaluate the full routing system: classifier + noise-specific denoisers.
+    
+    Args:
+        dataset_name (str): Name of dataset
+        args: Command line arguments
+    """
+    logger.info("="*60)
+    logger.info(f"Evaluating Routing System on {dataset_name.upper()}")
+    logger.info("="*60)
+    
+    # Prepare test dataset with all noise types
+    _, _, test_loader, num_channels, batch_size = prepare_datasets(
+        dataset_name=dataset_name.lower(),
+        noise_types='all',
+        batch_size=args.batch_size if args.batch_size > 0 else None,
+        root=args.data_root,
+        num_workers=args.num_workers
+    )
+    
+    # Set device
+    if args.device == 'cuda' and torch.cuda.is_available():
+        device = torch.device('cuda')
+    else:
+        device = torch.device('cpu')
+    
+    # Load classifier
+    classifier_path = os.path.join('./Models/Saved', f'classifier_{dataset_name.lower()}.pth')
+    classifier = NoiseTypeClassifier(in_channels=num_channels, num_classes=6)
+    classifier.load_state_dict(torch.load(classifier_path, map_location=device))
+    classifier.to(device)
+    classifier.eval()
+    logger.info(f"Loaded classifier from {classifier_path}")
+    
+    # Load all noise-specific models
+    noise_types = ['gaussian', 'salt_pepper', 'uniform', 'poisson', 'jpeg', 'impulse']
+    denoisers = {}
+    
+    for noise_type in noise_types:
+        model_path = os.path.join('./Models/Saved', f'{noise_type}_{dataset_name.lower()}.pth')
+        model = get_noise_model(noise_type, num_channels, num_channels)
+        model.load_state_dict(torch.load(model_path, map_location=device))
+        model.to(device)
+        model.eval()
+        denoisers[noise_type] = model
+        logger.info(f"Loaded {noise_type} denoiser from {model_path}")
+    
+    logger.info("\nStarting routing evaluation...")
+    
+    # Evaluation metrics
+    from Utilities.Comp_Train import calculate_psnr, calculate_ssim
+    
+    total_psnr = 0.0
+    total_ssim = 0.0
+    correct_routes = 0
+    total_images = 0
+    
+    per_noise_metrics = {nt: {'psnr': 0.0, 'ssim': 0.0, 'count': 0} for nt in noise_types}
+    
+    with torch.no_grad():
+        for noisy, clean, true_noise_idx in test_loader:
+            noisy = noisy.to(device)
+            clean = clean.to(device)
+            true_noise_idx = true_noise_idx.to(device)
+            
+            # Classify noise type
+            predicted_noise_idx, _ = classifier.predict(noisy)
+            
+            # Route to appropriate denoiser
+            batch_size_actual = noisy.size(0)
+            denoised_batch = torch.zeros_like(noisy)
+            
+            for i in range(batch_size_actual):
+                pred_idx = predicted_noise_idx[i].item()
+                true_idx = true_noise_idx[i].item()
+                noise_type = noise_types[pred_idx]
+                true_noise_type = noise_types[true_idx]
+                
+                # Denoise with predicted model
+                denoised_batch[i] = denoisers[noise_type](noisy[i:i+1]).squeeze(0)
+                
+                # Calculate metrics
+                psnr = calculate_psnr(denoised_batch[i:i+1], clean[i:i+1])
+                ssim = calculate_ssim(denoised_batch[i:i+1], clean[i:i+1])
+                
+                total_psnr += psnr
+                total_ssim += ssim
+                
+                # Track per-noise-type metrics
+                per_noise_metrics[true_noise_type]['psnr'] += psnr
+                per_noise_metrics[true_noise_type]['ssim'] += ssim
+                per_noise_metrics[true_noise_type]['count'] += 1
+                
+                if pred_idx == true_idx:
+                    correct_routes += 1
+                
+                total_images += 1
+    
+    # Calculate averages
+    avg_psnr = total_psnr / total_images
+    avg_ssim = total_ssim / total_images
+    routing_accuracy = 100 * correct_routes / total_images
+    
+    # Calculate per-noise averages
+    for noise_type in noise_types:
+        if per_noise_metrics[noise_type]['count'] > 0:
+            per_noise_metrics[noise_type]['psnr'] /= per_noise_metrics[noise_type]['count']
+            per_noise_metrics[noise_type]['ssim'] /= per_noise_metrics[noise_type]['count']
+    
+    # Create output directory for routing results
+    output_path = os.path.join(args.output_dir, 'Routing', dataset_name.lower(), 'routing_results')
+    os.makedirs(output_path, exist_ok=True)
+    
+    # Save results
+    results = {
+        'dataset': dataset_name.lower(),
+        'routing_accuracy': routing_accuracy,
+        'avg_psnr': avg_psnr,
+        'avg_ssim': avg_ssim,
+        'per_noise_metrics': per_noise_metrics,
+        'total_images': total_images
+    }
+    
+    import json
+    with open(os.path.join(output_path, 'routing_results.json'), 'w') as f:
+        json.dump(results, f, indent=4)
+    
+    # Log results
+    logger.info("\n" + "="*60)
+    logger.info("ROUTING SYSTEM RESULTS")
+    logger.info("="*60)
+    logger.info(f"Routing Accuracy: {routing_accuracy:.2f}%")
+    logger.info(f"Average PSNR: {avg_psnr:.2f} dB")
+    logger.info(f"Average SSIM: {avg_ssim:.4f}")
+    logger.info("\nPer-Noise-Type Performance:")
+    for noise_type in noise_types:
+        if per_noise_metrics[noise_type]['count'] > 0:
+            logger.info(f"  {noise_type}:")
+            logger.info(f"    PSNR: {per_noise_metrics[noise_type]['psnr']:.2f} dB")
+            logger.info(f"    SSIM: {per_noise_metrics[noise_type]['ssim']:.4f}")
+            logger.info(f"    Count: {per_noise_metrics[noise_type]['count']}")
+    logger.info("="*60)
+    logger.info(f"Results saved to: {output_path}")
+
+
 def train_noise_classifier(dataset_name, args):
     """
     Train the noise type classifier.
@@ -440,23 +708,41 @@ def main(args):
     # Routing Model
     else:
         logger.info("\n" + "="*60)
-        logger.info("ROUTING MODE: Checking for trained classifiers")
+        logger.info("ROUTING MODE: Checking dependencies")
         logger.info("="*60)
+        
+        noise_types = ['gaussian', 'salt_pepper', 'uniform', 'poisson', 'jpeg', 'impulse']
         
         for dataset_name in datasets:
-            classifier_exists, classifier_path = check_classifier_exists(dataset_name)
+            logger.info(f"\n--- Processing {dataset_name.upper()} ---")
             
+            # 1. Check and train classifier if needed
+            classifier_exists, classifier_path = check_classifier_exists(dataset_name)
             if classifier_exists:
-                logger.info(f"Classifier found for {dataset_name}: {classifier_path}")
+                logger.info(f"✓ Classifier found: {classifier_path}")
             else:
-                logger.info(f"Classifier not found for {dataset_name}")
-                logger.info(f"Training classifier for {dataset_name}...")
+                logger.info(f"✗ Classifier not found, training...")
                 classifier_path = train_noise_classifier(dataset_name, args)
-                logger.info(f"Classifier trained and saved: {classifier_path}")
+                logger.info(f"✓ Classifier trained: {classifier_path}")
+            
+            # 2. Check and train each noise-specific model if needed
+            logger.info(f"\nChecking noise-specific models for {dataset_name}...")
+            for noise_type in noise_types:
+                model_exists, model_path = check_noise_model_exists(noise_type, dataset_name)
+                if model_exists:
+                    logger.info(f"✓ {noise_type} model found: {model_path}")
+                else:
+                    logger.info(f"✗ {noise_type} model not found, training...")
+                    model_path = train_noise_specific_model(noise_type, dataset_name, args)
+                    logger.info(f"✓ {noise_type} model trained: {model_path}")
+            
+            # 3. Evaluate routing system
+            logger.info(f"\n✓ All models ready for {dataset_name}, evaluating routing system...")
+            evaluate_routing_system(dataset_name, args)
         
+        logger.info("\n" + "="*60)
+        logger.info("All routing training and evaluation completed!")
         logger.info("="*60)
-        logger.info("All classifiers ready. Proceeding with routing model training...")
-        logger.info("="*60 + "\n")
 
 
 def parse_arguments():
