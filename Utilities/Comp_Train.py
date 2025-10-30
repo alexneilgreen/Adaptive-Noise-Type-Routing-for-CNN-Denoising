@@ -64,7 +64,7 @@ def calculate_ssim(img1, img2, window_size=11, max_val=1.0):
     return ssim.item()
 
 
-class Trainer:
+class CompTrainer:
     """Trainer class for denoising models."""
     
     def __init__(self, model, train_loader, val_loader, test_loader, 

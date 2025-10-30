@@ -7,16 +7,21 @@ import logging
 
 from Utilities.Data_Loader import AdaptiveDataset, get_available_datasets
 from Utilities.Noise_Generator import NoiseGenerator
-from Utilities.Train import Trainer
+
+from Utilities.Comp_Train import CompTrainer
 from Models.CompModel import get_model
 
-# Setup logging
+from Utilities.Class_Train import ClassTrainer
+from Models.NoiseClassifier import NoiseTypeClassifier
+
+# ========== Setup logging ==========
 logging.basicConfig(
     level=logging.INFO,
     format='%(asctime)s - %(levelname)s - %(message)s'
 )
 logger = logging.getLogger(__name__)
 
+# ========== General Functions ==========
 
 class NoisyDataset(Dataset):
     """
@@ -210,6 +215,7 @@ def save_results_to_csv(results_dict, output_dir='./Results'):
     
     logger.info(f"Results appended to {csv_path}")
 
+# ========== Comprehensive Model Functions ==========
 
 def train_single_dataset(dataset_name, args):
     """
@@ -254,7 +260,7 @@ def train_single_dataset(dataset_name, args):
     os.makedirs(output_path, exist_ok=True)
     logger.info(f"Results will be saved to: {output_path}")
     
-    trainer = Trainer(
+    trainer = CompTrainer(
         model=model,
         train_loader=train_loader,
         val_loader=val_loader,
@@ -289,6 +295,96 @@ def train_single_dataset(dataset_name, args):
     
     return results
 
+# ========== Routing Model Functions ==========
+
+def check_classifier_exists(dataset_name, model_dir='./Models/Saved'):
+    """
+    Check if a trained classifier exists for the dataset.
+    
+    Args:
+        dataset_name (str): Name of dataset
+        model_dir (str): Directory where models are saved
+    
+    Returns:
+        tuple: (exists, model_path)
+    """
+    model_path = os.path.join(model_dir, f'classifier_{dataset_name.lower()}.pth')
+    return os.path.exists(model_path), model_path
+
+
+def train_noise_classifier(dataset_name, args):
+    """
+    Train the noise type classifier.
+    
+    Args:
+        dataset_name (str): Name of dataset
+        args: Command line arguments
+        
+    Returns:
+        str: Path to saved classifier model
+    """
+    logger.info("="*60)
+    logger.info(f"Training Noise Type Classifier on {dataset_name.upper()}")
+    logger.info("="*60)
+    
+    # Prepare datasets
+    train_loader, val_loader, test_loader, num_channels, batch_size = prepare_datasets(
+        dataset_name=dataset_name.lower(),
+        noise_types='all',
+        batch_size=args.batch_size if args.batch_size > 0 else None,
+        root=args.data_root,
+        num_workers=args.num_workers
+    )
+    
+    # Initialize classifier model
+    logger.info("Initializing noise type classifier...")
+    classifier = NoiseTypeClassifier(in_channels=num_channels, num_classes=6)
+    
+    # Log model parameters
+    total_params = sum(p.numel() for p in classifier.parameters())
+    trainable_params = sum(p.numel() for p in classifier.parameters() if p.requires_grad)
+    logger.info(f"Total parameters: {total_params:,}")
+    logger.info(f"Trainable parameters: {trainable_params:,}")
+    
+    # Create output directory
+    output_path = os.path.join(args.output_dir, f"classifier_{dataset_name.lower()}")
+    os.makedirs(output_path, exist_ok=True)
+    logger.info(f"Results will be saved to: {output_path}")
+    
+    # Initialize trainer
+    trainer = ClassTrainer(
+        model=classifier,
+        train_loader=train_loader,
+        val_loader=val_loader,
+        test_loader=test_loader,
+        learning_rate=args.learning_rate,
+        results_dir=output_path,
+        early_stopping_patience=args.ESP,
+        device=args.device
+    )
+    
+    # Train the classifier
+    logger.info("Starting classifier training...")
+    results = trainer.train(epochs=args.classifier_epochs)
+    
+    # Move saved model to Models/Saved directory
+    model_save_dir = os.path.join('./Models', 'Saved')
+    os.makedirs(model_save_dir, exist_ok=True)
+    
+    final_model_path = os.path.join(model_save_dir, f'classifier_{dataset_name.lower()}.pth')
+    
+    # Copy the model to the final location
+    import shutil
+    shutil.copy(results['model_path'], final_model_path)
+    logger.info(f"Classifier model copied to: {final_model_path}")
+    
+    logger.info(f"Completed classifier training on {dataset_name.upper()}")
+    logger.info(f"Test Accuracy: {results['test_accuracy']:.2f}%")
+    logger.info("="*60)
+    
+    return final_model_path
+
+# ========== Main ==========
 
 def main(args):
     """
@@ -315,23 +411,46 @@ def main(args):
         logger.info(f"Training on all datasets: {datasets}")
     else:
         datasets = [args.dataset.lower()]
+
+    # Comprehensive Model
+    if args.model == 'comp':
+        # Train on each dataset
+        all_results = {}
+        for dataset_name in datasets:
+            try:
+                results = train_single_dataset(dataset_name, args)
+                all_results[dataset_name] = results
+            except Exception as e:
+                logger.error(f"Error training on {dataset_name}: {e}")
+                raise
+        
+        logger.info("\n" + "="*60)
+        logger.info("All training completed successfully!")
+        logger.info("="*60)
+        logger.info(f"Results summary saved to: {os.path.join(args.output_dir, 'results_summary.csv')}")
+        
+        return all_results
     
-    # Train on each dataset
-    all_results = {}
-    for dataset_name in datasets:
-        try:
-            results = train_single_dataset(dataset_name, args)
-            all_results[dataset_name] = results
-        except Exception as e:
-            logger.error(f"Error training on {dataset_name}: {e}")
-            raise
-    
-    logger.info("\n" + "="*60)
-    logger.info("All training completed successfully!")
-    logger.info("="*60)
-    logger.info(f"Results summary saved to: {os.path.join(args.output_dir, 'results_summary.csv')}")
-    
-    return all_results
+    # Routing Model
+    else:
+        logger.info("\n" + "="*60)
+        logger.info("ROUTING MODE: Checking for trained classifiers")
+        logger.info("="*60)
+        
+        for dataset_name in datasets:
+            classifier_exists, classifier_path = check_classifier_exists(dataset_name)
+            
+            if classifier_exists:
+                logger.info(f"Classifier found for {dataset_name}: {classifier_path}")
+            else:
+                logger.info(f"Classifier not found for {dataset_name}")
+                logger.info(f"Training classifier for {dataset_name}...")
+                classifier_path = train_noise_classifier(dataset_name, args)
+                logger.info(f"Classifier trained and saved: {classifier_path}")
+        
+        logger.info("="*60)
+        logger.info("All classifiers ready. Proceeding with routing model training...")
+        logger.info("="*60 + "\n")
 
 
 def parse_arguments():
@@ -353,6 +472,9 @@ def parse_arguments():
     # Training hyperparameters
     parser.add_argument('--epochs', type=int, default=50,
                        help='Number of training epochs')
+    
+    parser.add_argument('--classifier_epochs', type=int, default=30,
+                       help='Number of training epochs for noise classifier')
     
     parser.add_argument('--learning_rate', type=float, default=0.001,
                        help='Learning rate for optimizer')
