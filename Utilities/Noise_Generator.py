@@ -7,7 +7,7 @@ import argparse
 from typing import Union, Dict, List, Tuple
 import matplotlib.pyplot as plt
 
-from Data_Loader import get_dataloader
+from Utilities.Data_Loader import get_dataloader
 
 class NoiseGenerator:
     """
