@@ -114,10 +114,11 @@ class PoissonDenoiser(nn.Module):
             torch.Tensor: Denoised image [B, C, H, W]
         """
         # Apply variance stabilization
-        x_stabilized = self.variance_stab(x)
+        # x_stabilized = self.variance_stab(x)  #! Debugging
         
         # Encoder with skip connections
-        enc1_out = self.enc1(x_stabilized)
+        # enc1_out = self.enc1(x_stabilized)    #! Debugging
+        enc1_out = self.enc1(x)
         pool1_out = self.pool1(enc1_out)
         
         enc2_out = self.enc2(pool1_out)

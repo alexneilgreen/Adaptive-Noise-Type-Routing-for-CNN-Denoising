@@ -1,0 +1,246 @@
+Starting training on device: cuda
+Total epochs: 50
+============================================================
+Epoch 1/50
+  Train - Loss: 0.0111, PSNR: 30.21dB, SSIM: 0.9942
+  Val   - Loss: 0.0098, PSNR: 30.74dB, SSIM: 0.9955
+  New best validation loss: 0.0098
+------------------------------------------------------------
+Epoch 2/50
+  Train - Loss: 0.0098, PSNR: 30.80dB, SSIM: 0.9956
+  Val   - Loss: 0.0099, PSNR: 30.66dB, SSIM: 0.9953
+  Early stopping counter: 1/10
+------------------------------------------------------------
+Epoch 3/50
+  Train - Loss: 0.0096, PSNR: 30.92dB, SSIM: 0.9957
+  Val   - Loss: 0.0095, PSNR: 31.02dB, SSIM: 0.9958
+  New best validation loss: 0.0095
+------------------------------------------------------------
+Epoch 4/50
+  Train - Loss: 0.0095, PSNR: 30.99dB, SSIM: 0.9958
+  Val   - Loss: 0.0097, PSNR: 30.84dB, SSIM: 0.9957
+  Early stopping counter: 1/10
+------------------------------------------------------------
+Epoch 5/50
+  Train - Loss: 0.0095, PSNR: 31.04dB, SSIM: 0.9958
+  Val   - Loss: 0.0094, PSNR: 31.07dB, SSIM: 0.9959
+  New best validation loss: 0.0094
+------------------------------------------------------------
+Epoch 6/50
+  Train - Loss: 0.0094, PSNR: 31.07dB, SSIM: 0.9959
+  Val   - Loss: 0.0094, PSNR: 31.08dB, SSIM: 0.9959
+  New best validation loss: 0.0094
+------------------------------------------------------------
+Epoch 7/50
+  Train - Loss: 0.0094, PSNR: 31.11dB, SSIM: 0.9959
+  Val   - Loss: 0.0094, PSNR: 31.08dB, SSIM: 0.9959
+  New best validation loss: 0.0094
+------------------------------------------------------------
+Epoch 8/50
+  Train - Loss: 0.0094, PSNR: 31.13dB, SSIM: 0.9959
+  Val   - Loss: 0.0093, PSNR: 31.17dB, SSIM: 0.9960
+  New best validation loss: 0.0093
+------------------------------------------------------------
+Epoch 9/50
+  Train - Loss: 0.0093, PSNR: 31.16dB, SSIM: 0.9960
+  Val   - Loss: 0.0094, PSNR: 31.08dB, SSIM: 0.9959
+  Early stopping counter: 1/10
+------------------------------------------------------------
+Epoch 10/50
+  Train - Loss: 0.0093, PSNR: 31.16dB, SSIM: 0.9960
+  Val   - Loss: 0.0093, PSNR: 31.14dB, SSIM: 0.9959
+  New best validation loss: 0.0093
+------------------------------------------------------------
+Epoch 11/50
+  Train - Loss: 0.0093, PSNR: 31.19dB, SSIM: 0.9960
+  Val   - Loss: 0.0092, PSNR: 31.24dB, SSIM: 0.9960
+  New best validation loss: 0.0092
+------------------------------------------------------------
+Epoch 12/50
+  Train - Loss: 0.0093, PSNR: 31.21dB, SSIM: 0.9960
+  Val   - Loss: 0.0092, PSNR: 31.24dB, SSIM: 0.9960
+  New best validation loss: 0.0092
+------------------------------------------------------------
+Epoch 13/50
+  Train - Loss: 0.0092, PSNR: 31.23dB, SSIM: 0.9960
+  Val   - Loss: 0.0092, PSNR: 31.19dB, SSIM: 0.9960
+  Early stopping counter: 1/10
+------------------------------------------------------------
+Epoch 14/50
+  Train - Loss: 0.0092, PSNR: 31.24dB, SSIM: 0.9960
+  Val   - Loss: 0.0092, PSNR: 31.26dB, SSIM: 0.9961
+  New best validation loss: 0.0092
+------------------------------------------------------------
+Epoch 15/50
+  Train - Loss: 0.0092, PSNR: 31.25dB, SSIM: 0.9960
+  Val   - Loss: 0.0092, PSNR: 31.28dB, SSIM: 0.9961
+  Early stopping counter: 1/10
+------------------------------------------------------------
+Epoch 16/50
+  Train - Loss: 0.0092, PSNR: 31.26dB, SSIM: 0.9961
+  Val   - Loss: 0.0092, PSNR: 31.25dB, SSIM: 0.9960
+  New best validation loss: 0.0092
+------------------------------------------------------------
+Epoch 17/50
+  Train - Loss: 0.0092, PSNR: 31.27dB, SSIM: 0.9961
+  Val   - Loss: 0.0091, PSNR: 31.29dB, SSIM: 0.9961
+  New best validation loss: 0.0091
+------------------------------------------------------------
+Epoch 18/50
+  Train - Loss: 0.0091, PSNR: 31.28dB, SSIM: 0.9961
+  Val   - Loss: 0.0092, PSNR: 31.29dB, SSIM: 0.9961
+  Early stopping counter: 1/10
+------------------------------------------------------------
+Epoch 19/50
+  Train - Loss: 0.0091, PSNR: 31.29dB, SSIM: 0.9961
+  Val   - Loss: 0.0091, PSNR: 31.24dB, SSIM: 0.9960
+  Early stopping counter: 2/10
+------------------------------------------------------------
+Epoch 20/50
+  Train - Loss: 0.0091, PSNR: 31.30dB, SSIM: 0.9961
+  Val   - Loss: 0.0091, PSNR: 31.28dB, SSIM: 0.9961
+  Early stopping counter: 3/10
+------------------------------------------------------------
+Epoch 21/50
+  Train - Loss: 0.0091, PSNR: 31.31dB, SSIM: 0.9961
+  Val   - Loss: 0.0091, PSNR: 31.24dB, SSIM: 0.9960
+  Early stopping counter: 4/10
+------------------------------------------------------------
+Epoch 22/50
+  Train - Loss: 0.0091, PSNR: 31.31dB, SSIM: 0.9961
+  Val   - Loss: 0.0090, PSNR: 31.33dB, SSIM: 0.9961
+  New best validation loss: 0.0090
+------------------------------------------------------------
+Epoch 23/50
+  Train - Loss: 0.0091, PSNR: 31.32dB, SSIM: 0.9961
+  Val   - Loss: 0.0090, PSNR: 31.35dB, SSIM: 0.9961
+  Early stopping counter: 1/10
+------------------------------------------------------------
+Epoch 24/50
+  Train - Loss: 0.0091, PSNR: 31.33dB, SSIM: 0.9961
+  Val   - Loss: 0.0090, PSNR: 31.36dB, SSIM: 0.9961
+  New best validation loss: 0.0090
+------------------------------------------------------------
+Epoch 25/50
+  Train - Loss: 0.0090, PSNR: 31.34dB, SSIM: 0.9961
+  Val   - Loss: 0.0091, PSNR: 31.32dB, SSIM: 0.9961
+  Early stopping counter: 1/10
+------------------------------------------------------------
+Epoch 26/50
+  Train - Loss: 0.0090, PSNR: 31.35dB, SSIM: 0.9961
+  Val   - Loss: 0.0091, PSNR: 31.33dB, SSIM: 0.9961
+  Early stopping counter: 2/10
+------------------------------------------------------------
+Epoch 27/50
+  Train - Loss: 0.0090, PSNR: 31.35dB, SSIM: 0.9961
+  Val   - Loss: 0.0091, PSNR: 31.35dB, SSIM: 0.9961
+  Early stopping counter: 3/10
+------------------------------------------------------------
+Epoch 28/50
+  Train - Loss: 0.0090, PSNR: 31.35dB, SSIM: 0.9961
+  Val   - Loss: 0.0091, PSNR: 31.33dB, SSIM: 0.9960
+  Early stopping counter: 4/10
+------------------------------------------------------------
+Epoch 29/50
+  Train - Loss: 0.0090, PSNR: 31.36dB, SSIM: 0.9961
+  Val   - Loss: 0.0090, PSNR: 31.36dB, SSIM: 0.9961
+  New best validation loss: 0.0090
+------------------------------------------------------------
+Epoch 30/50
+  Train - Loss: 0.0090, PSNR: 31.37dB, SSIM: 0.9961
+  Val   - Loss: 0.0090, PSNR: 31.36dB, SSIM: 0.9961
+  Early stopping counter: 1/10
+------------------------------------------------------------
+Epoch 31/50
+  Train - Loss: 0.0090, PSNR: 31.38dB, SSIM: 0.9962
+  Val   - Loss: 0.0090, PSNR: 31.32dB, SSIM: 0.9961
+  Early stopping counter: 2/10
+------------------------------------------------------------
+Epoch 32/50
+  Train - Loss: 0.0090, PSNR: 31.38dB, SSIM: 0.9962
+  Val   - Loss: 0.0090, PSNR: 31.36dB, SSIM: 0.9961
+  Early stopping counter: 3/10
+------------------------------------------------------------
+Epoch 33/50
+  Train - Loss: 0.0090, PSNR: 31.38dB, SSIM: 0.9962
+  Val   - Loss: 0.0089, PSNR: 31.38dB, SSIM: 0.9962
+  New best validation loss: 0.0089
+------------------------------------------------------------
+Epoch 34/50
+  Train - Loss: 0.0089, PSNR: 31.39dB, SSIM: 0.9962
+  Val   - Loss: 0.0090, PSNR: 31.34dB, SSIM: 0.9961
+  Early stopping counter: 1/10
+------------------------------------------------------------
+Epoch 35/50
+  Train - Loss: 0.0089, PSNR: 31.39dB, SSIM: 0.9962
+  Val   - Loss: 0.0090, PSNR: 31.36dB, SSIM: 0.9961
+  Early stopping counter: 2/10
+------------------------------------------------------------
+Epoch 36/50
+  Train - Loss: 0.0089, PSNR: 31.39dB, SSIM: 0.9962
+  Val   - Loss: 0.0089, PSNR: 31.40dB, SSIM: 0.9962
+  New best validation loss: 0.0089
+------------------------------------------------------------
+Epoch 37/50
+  Train - Loss: 0.0089, PSNR: 31.40dB, SSIM: 0.9962
+  Val   - Loss: 0.0090, PSNR: 31.36dB, SSIM: 0.9961
+  Early stopping counter: 1/10
+------------------------------------------------------------
+Epoch 38/50
+  Train - Loss: 0.0089, PSNR: 31.40dB, SSIM: 0.9962
+  Val   - Loss: 0.0089, PSNR: 31.37dB, SSIM: 0.9961
+  Early stopping counter: 2/10
+------------------------------------------------------------
+Epoch 39/50
+  Train - Loss: 0.0089, PSNR: 31.40dB, SSIM: 0.9962
+  Val   - Loss: 0.0089, PSNR: 31.37dB, SSIM: 0.9962
+  Early stopping counter: 3/10
+------------------------------------------------------------
+Epoch 40/50
+  Train - Loss: 0.0089, PSNR: 31.40dB, SSIM: 0.9962
+  Val   - Loss: 0.0089, PSNR: 31.37dB, SSIM: 0.9961
+  Early stopping counter: 4/10
+------------------------------------------------------------
+Epoch 41/50
+  Train - Loss: 0.0089, PSNR: 31.41dB, SSIM: 0.9962
+  Val   - Loss: 0.0090, PSNR: 31.39dB, SSIM: 0.9962
+  Early stopping counter: 5/10
+------------------------------------------------------------
+Epoch 42/50
+  Train - Loss: 0.0089, PSNR: 31.41dB, SSIM: 0.9962
+  Val   - Loss: 0.0090, PSNR: 31.36dB, SSIM: 0.9961
+  Early stopping counter: 6/10
+------------------------------------------------------------
+Epoch 43/50
+  Train - Loss: 0.0089, PSNR: 31.42dB, SSIM: 0.9962
+  Val   - Loss: 0.0089, PSNR: 31.36dB, SSIM: 0.9961
+  Early stopping counter: 7/10
+------------------------------------------------------------
+Epoch 44/50
+  Train - Loss: 0.0089, PSNR: 31.42dB, SSIM: 0.9962
+  Val   - Loss: 0.0090, PSNR: 31.35dB, SSIM: 0.9961
+  Early stopping counter: 8/10
+------------------------------------------------------------
+Epoch 45/50
+  Train - Loss: 0.0089, PSNR: 31.43dB, SSIM: 0.9962
+  Val   - Loss: 0.0089, PSNR: 31.38dB, SSIM: 0.9962
+  Early stopping counter: 9/10
+------------------------------------------------------------
+Epoch 46/50
+  Train - Loss: 0.0089, PSNR: 31.43dB, SSIM: 0.9962
+  Val   - Loss: 0.0089, PSNR: 31.37dB, SSIM: 0.9961
+  Early stopping counter: 10/10
+
+Early stopping triggered at epoch 46
+Best model restored
+
+Running final test evaluation...
+
+============================================================
+FINAL TEST RESULTS
+============================================================
+Test Loss: 0.0089
+Test PSNR: 31.37 dB
+Test SSIM: 0.9961
+Total Computation Time: 5055.57 seconds
+============================================================
