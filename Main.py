@@ -589,7 +589,8 @@ def evaluate_routing_system(dataset_name, args):
         json.dump(results, f, indent=4)
     
     # Log results
-    logger.info("\n" + "="*60)
+    logger.info("\n")
+    logger.info("="*60)
     logger.info("ROUTING SYSTEM RESULTS")
     logger.info("="*60)
     logger.info(f"Routing Accuracy: {routing_accuracy:.2f}%")
@@ -715,7 +716,8 @@ def main(args):
                 logger.error(f"Error training on {dataset_name}: {e}")
                 raise
         
-        logger.info("\n" + "="*60)
+        logger.info("\n")
+        logger.info("="*60)
         logger.info("All training completed successfully!")
         logger.info("="*60)
         logger.info(f"Results summary saved to: {os.path.join(args.output_dir, 'Comprehensive', 'results_summary.csv')}")
@@ -724,7 +726,8 @@ def main(args):
     
     # Routing Model
     else:
-        logger.info("\n" + "="*60)
+        logger.info("\n")
+        logger.info("="*60)
         logger.info("ROUTING MODE: Checking dependencies")
         logger.info("="*60)
         
@@ -757,7 +760,8 @@ def main(args):
             logger.info(f"\n✓ All models ready for {dataset_name}, evaluating routing system...")
             evaluate_routing_system(dataset_name, args)
         
-        logger.info("\n" + "="*60)
+        logger.info("\n")
+        logger.info("="*60)
         logger.info("All routing training and evaluation completed!")
         logger.info("="*60)
 
