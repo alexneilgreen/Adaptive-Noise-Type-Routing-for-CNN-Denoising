@@ -570,8 +570,8 @@ def evaluate_routing_system(dataset_name, args):
             per_noise_metrics[noise_type]['psnr'] /= per_noise_metrics[noise_type]['count']
             per_noise_metrics[noise_type]['ssim'] /= per_noise_metrics[noise_type]['count']
     
-    # Create output directory for routing results
-    output_path = os.path.join(args.output_dir, 'Routing', dataset_name.lower(), 'routing_results')
+    # Create output directory (without nested routing_results folder)
+    output_path = os.path.join(args.output_dir, 'Routing', dataset_name.lower())
     os.makedirs(output_path, exist_ok=True)
     
     # Save results
