@@ -578,6 +578,7 @@ def evaluate_routing_system(dataset_name, args):
     results = {
         'dataset': dataset_name.lower(),
         'routing_accuracy': routing_accuracy,
+        'avg_loss': avg_loss,
         'avg_psnr': avg_psnr,
         'avg_ssim': avg_ssim,
         'per_noise_metrics': per_noise_metrics,
@@ -594,7 +595,7 @@ def evaluate_routing_system(dataset_name, args):
     logger.info("ROUTING SYSTEM RESULTS")
     logger.info("="*60)
     logger.info(f"Routing Accuracy: {routing_accuracy:.2f}%")
-    logger.info(f"Average Loss: {avg_loss:.4f}")
+    logger.info(f"Average Loss: {avg_loss:.4f}")  # Now saved to routing_results.json
     logger.info(f"Average PSNR: {avg_psnr:.2f} dB")
     logger.info(f"Average SSIM: {avg_ssim:.4f}")
     logger.info("\nPer-Noise-Type Performance:")

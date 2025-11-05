@@ -5,31 +5,36 @@
 ```
 .
 ├── Main.py                     # Main entry point for training
-├── Train.py                    # Training loop and evaluation logic
-├── Data_Loader.py              # Dataset loading utilities (MNIST, CIFAR-10/100, STL-10)
-├── Noise_Generator.py          # Noise generation for all supported types
-├── CompositeLoss.py            # Custom composite loss function (MSE + MAE + SSIM + Gradient)
 │
 ├── Models/
 │   ├── CompModel.py            # Model architecture definitions
-│   └── ...                     # Additional model variants
+│   ├── NoiseClassifier.py      # Noise type classifier
+│   ├── Routing_Models/         # Noise-specific denoisers
+│   └── Saved/                  # Trained model checkpoints (created during training)
+│
+├── Utilities/
+│   ├── Data_Loader.py          # Dataset loading utilities (MNIST, CIFAR-10/100, STL-10)
+│   ├── Noise_Generator.py      # Noise generation for all supported types
+│   ├── Composite_Loss.py       # Custom composite loss function (MSE + MAE + SSIM + Gradient)
+│   ├── Comp_Train.py           # Training loop for denoising models
+│   └── Class_Train.py          # Training loop for noise classifier
 │
 ├── Data/                       # Dataset storage (auto-downloaded)
 │
 ├── Results/                    # Training outputs and metrics
-│   ├── results_summary.csv     # Aggregated results across all runs
-│   └── {model}_{dataset}/      # Per-experiment results
-│       ├── training_log.txt    # Detailed training logs
-│       ├── epoch_data.csv      # Per-epoch metrics (loss, PSNR, SSIM)
-│       ├── loss_components.csv # Individual loss components per epoch
-│       ├── results.json        # Final test results
-│       ├── images/             # Sample denoised images
-│       │   ├── 1_original.png
-│       │   ├── 1_generated.png
-│       │   └── ...
-│       └── visual_comparisons/ # Side-by-side comparisons
-│           ├── comparison_0.png
-│           └── ...
+│   ├── Comprehensive/          # Comprehensive model results
+│   │   ├── results_summary.csv # Aggregated results across all runs
+│   │   └── {dataset}/          # Per-experiment results
+│   │       ├── training_log.txt    # Detailed training logs
+│   │       ├── epoch_data.csv      # Per-epoch metrics (loss, PSNR, SSIM)
+│   │       ├── loss_components.csv # Individual loss components per epoch
+│   │       ├── results.json        # Final test results
+│   │       ├── images/             # Sample denoised images
+│   │       └── visual_comparisons/ # Side-by-side comparisons
+│   └── Routing/                # Routing model results
+│       └── {dataset}/
+│           ├── {noise_type}/   # Per noise-specific model results
+│           └── routing_results.json # Final routing evaluation
 │
 └── Noise_Examples/             # Example noisy images for visualization
     ├── mnist/
@@ -80,14 +85,14 @@ python Main.py
 
 ```bash
 # Download all datasets
-python Data_Loader.py
+python Utilities/Data_Loader.py
 ```
 
 ### Generate Noise Examples
 
 ```bash
 # Generate examples for all datasets
-python Noise_Generator.py --generate_examples --dataset all
+python Utilities/Noise_Generator.py --generate_examples --dataset all
 ```
 
 ## Command Line Arguments
@@ -212,13 +217,13 @@ graph TD
     D --> D5[JPEGModel.py]
     D --> D6[ImpulseModel.py]
     
-    E --> E1[classifier_dataset.pth]
-    E --> E2[gaussian_dataset.pth]
-    E --> E3[salt_pepper_dataset.pth]
-    E --> E4[uniform_dataset.pth]
-    E --> E5[poisson_dataset.pth]
-    E --> E6[jpeg_dataset.pth]
-    E --> E7[impulse_dataset.pth]
+    E --> E1[classifier_dataset.pth - created during training]
+    E --> E2[gaussian_dataset.pth - created during training]
+    E --> E3[salt_pepper_dataset.pth - created during training]
+    E --> E4[uniform_dataset.pth - created during training]
+    E --> E5[poisson_dataset.pth - created during training]
+    E --> E6[jpeg_dataset.pth - created during training]
+    E --> E7[impulse_dataset.pth - created during training]
     
     style A fill:#fff4e1
     style D fill:#e3f2fd
@@ -259,7 +264,6 @@ graph TD
     B2 --> B2E[images/]
     B2 --> B2F[visual_comparisons/]
     
-    C --> C1[results_summary.csv]
     C --> C2[dataset1/]
     
     C2 --> C2A[gaussian/]
@@ -268,14 +272,12 @@ graph TD
     C2 --> C2D[poisson/]
     C2 --> C2E[jpeg/]
     C2 --> C2F[impulse/]
-    C2 --> C2G[routing_results/]
+    C2 --> C2G[routing_results.json]
     
     C2A --> C2A1[training_log.txt]
     C2A --> C2A2[epoch_data.csv]
     C2A --> C2A3[results.json]
     C2A --> C2A4[images/]
-    
-    C2G --> C2G1[routing_results.json]
     
     style A fill:#f3e5f5
     style B fill:#e8f5e9
@@ -326,7 +328,10 @@ This project develops an adaptive CNN-based image denoising system that identifi
 ## Requirements
 
 ```bash
-pip install torch torchvision numpy pillow matplotlib seaborn scikit-learn
+pip install torch>=2.0.0 torchvision>=0.15.0 pytorch-msssim>=1.0.0 Pillow>=9.0.0 numpy>=1.21.0 matplotlib>=3.5.0 tqdm>=4.65.0
+
+# Or install from requirements.txt
+pip install -r requirements.txt
 ```
 
 ## Quick Start
@@ -398,9 +403,9 @@ python Utilities/Noise_Generator.py --generate_examples --dataset all --num_exam
   - **Uniform**: Wider filters with dropout for robustness
   - **Poisson**: Variance stabilization (Anscombe transform)
   - **JPEG**: Deblocking layers for 8×8 artifacts
-  - **Impulse**: Non-local attention for context aggregation
+  - **Impulse**: Corruption detection and dilated convolutions for larger context
   - Location: `Models/Routing_Models/`
-  - Saved to: `Models/Saved/{noise_type}_{dataset}.pth`
+  - Saved to: `Models/Saved/{noise_type}_{dataset}.pth` (directory created during training)
 
 ## Loss Function
 
@@ -445,16 +450,15 @@ Results/Comprehensive/
 ### Routing Model Results
 ```
 Results/Routing/
-├── results_summary.csv          # Not used for routing mode
 └── {dataset}/
     ├── {noise_type}/            # Per noise-specific model results
     │   ├── training_log.txt
     │   ├── epoch_data.csv
+    │   ├── loss_components.csv  # Generated during individual model training
     │   ├── results.json
     │   ├── images/
     │   └── visual_comparisons/
-    └── routing_results/         # Final routing evaluation
-        └── routing_results.json
+    └── routing_results.json     # Final routing evaluation
 ```
 
 ### Routing Results Format
@@ -462,11 +466,12 @@ Results/Routing/
 {
     "dataset": "cifar10",
     "routing_accuracy": 95.2,
+    "avg_loss": 0.0267,
     "avg_psnr": 28.45,
     "avg_ssim": 0.8567,
     "per_noise_metrics": {
-        "gaussian": {"psnr": 29.1, "ssim": 0.87, "count": 1000},
-        "salt_pepper": {"psnr": 27.8, "ssim": 0.84, "count": 1000},
+        "gaussian": {"loss": 0.0234, "psnr": 29.1, "ssim": 0.87, "count": 1000},
+        "salt_pepper": {"loss": 0.0298, "psnr": 27.8, "ssim": 0.84, "count": 1000},
         ...
     },
     "total_images": 6000
@@ -500,7 +505,7 @@ Results/Routing/
      - Route to appropriate denoiser
      - Evaluate against ground truth
    - Calculate aggregate and per-noise metrics
-4. **Save results** to `Results/Routing/{dataset}/routing_results/`
+4. **Save results** to `Results/Routing/{dataset}/routing_results.json`
 
 ## Team
 
@@ -519,9 +524,9 @@ Results/Routing/
 
 If you use this code in your research, please cite:
 ```
-@project{adaptive-noise-routing-2024,
+@project{adaptive-noise-routing-2025,
   title={Adaptive Noise-Type Routing for CNN Denoising},
   authors={De Aguiar, Z. and Green, A. and Moulton, W. and Wood, Z.},
-  year={2024}
+  year={2025}
 }
 ```
