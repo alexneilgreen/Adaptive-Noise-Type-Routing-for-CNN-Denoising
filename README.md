@@ -321,7 +321,7 @@ This project develops an adaptive CNN-based image denoising system that identifi
 - **Multiple datasets**: MNIST, CIFAR-10, CIFAR-100, STL-10
 - **Composite loss function**: MSE (35%) + MAE (35%) + SSIM (20%) + Gradient Loss (10%)
 - **Comprehensive metrics**: Loss, PSNR, SSIM with component-level tracking
-- **Automatic visualization**: Generates comparison images and training curves
+- **Automatic visualization**: Generates comparison images; CSV logs for training curves
 - **Early stopping**: Prevents overfitting with configurable patience
 - **Automatic model management**: Checks for existing models and trains missing components
 
@@ -506,6 +506,48 @@ Results/Routing/
      - Evaluate against ground truth
    - Calculate aggregate and per-noise metrics
 4. **Save results** to `Results/Routing/{dataset}/routing_results.json`
+
+## Routing Classifier Outputs
+
+- `Results/Routing/{dataset}/training_log.txt`: Classifier training logs
+- `Results/Routing/{dataset}/epoch_data.csv`: Classifier loss/accuracy per epoch
+- `Results/Routing/{dataset}/results.json`: Final classifier metrics
+- `Results/Routing/{dataset}/confusion_matrix.png`: Confusion matrix for 6 noise classes
+
+## Aggregated Results (Routing)
+
+- `Results/Routing/results_summary.csv` is appended with a row per routing run (dataset, model, loss, PSNR, SSIM, time, params, batch_size).
+
+## Noise Generator Tips
+
+- Generate examples: `python Utilities/Noise_Generator.py --generate_examples --dataset all --num_examples 10`
+- Test a specific noise type: `python Utilities/Noise_Generator.py --test_noise jpeg`
+- Adjust noise parameters programmatically (optional):
+
+```python
+from Utilities.Noise_Generator import NoiseGenerator
+ng = NoiseGenerator()
+ng.update_noise_params('gaussian', sigma=15.0)
+```
+
+## Batch Size Auto-Adjust
+
+- `mnist`: 64
+- `cifar10`: 64
+- `cifar100`: 64
+- `stl10`: 32
+
+## Pretrained Weights and Auto-Skip Training
+
+- Pretrained weights are included under `Models/Saved/` for classifier and all six denoisers per dataset.
+- In routing mode, `Main.py` checks `Models/Saved/` and trains only missing components, then evaluates routing.
+- Comprehensive model checkpoints are written inside `Results/Comprehensive/{dataset}/` (not under `Models/Saved/`).
+
+## Reproduce Provided Results
+
+- Comprehensive (single dataset): `python Main.py --model comp --dataset cifar10`
+- Comprehensive (all datasets): `python Main.py --model comp --dataset all --epochs 50`
+- Routing (uses pretrained where available, trains missing pieces): `python Main.py --model routing --dataset cifar10`
 
 ## Team
 
