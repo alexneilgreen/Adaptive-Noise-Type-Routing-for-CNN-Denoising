@@ -218,7 +218,10 @@ Results/Routing/
     "per_noise_metrics": {
         "gaussian": {"loss": 0.0234, "psnr": 29.1, "ssim": 0.87, "count": 1000},
         "salt_pepper": {"loss": 0.0298, "psnr": 27.8, "ssim": 0.84, "count": 1000},
-        ...
+        "uniform": {"loss": 0.0198, "psnr": 32.9, "ssim": 0.99, "count": 1677},
+        "poisson": {"loss": 0.0437, "psnr": 27.2, "ssim": 0.97, "count": 1695},
+        "jpeg": {"loss": 0.0386, "psnr": 28.0, "ssim": 0.97, "count": 1642},
+        "impulse": {"loss": 0.0040, "psnr": 40.7, "ssim": 0.99, "count": 1616}
     },
     "total_images": 6000
 }
