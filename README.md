@@ -4,7 +4,7 @@
 
 > A noise-adaptive CNN framework that classifies image noise type and routes inputs through specialized denoising branches, evaluated against clean ground-truth images across multiple benchmark datasets.
 
-![Status](https://img.shields.io/badge/status-in_progress-yellow)
+![Status](https://img.shields.io/badge/status-complete-brightgreen)
 ![Language](https://img.shields.io/badge/language-Python-blue)
 ![Semester](https://img.shields.io/badge/semester-Fall_2025-orange)
 
