@@ -163,8 +163,8 @@ project-root/
 
 ```bash
 # 1. Clone the repository
-git clone https://github.com/yourusername/UCF-CurrentTopicsML-AdaptiveNoiseCNN.git
-cd UCF-CurrentTopicsML-AdaptiveNoiseCNN
+git clone https://github.com/alexneilgreen/UCF-CurrentTopicsInML-AdaptiveNoiseCNN.git
+cd UCF-CurrentTopicsInML-AdaptiveNoiseCNN
 
 # 2. Install dependencies
 pip install -r requirements.txt
